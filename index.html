@@ -1,0 +1,101 @@
+// pokreci sa: python -m http.server 8000
+// zatim otvori u pregledniku: http://localhost:8000
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diplomski rad - Paged.js demo</title>
+  <link rel="stylesheet" href="style.css" />
+  <style id="paged-css">
+    @page { size: A4; margin: 18mm; }
+    :root { --content-color: #111827; }
+    body { font-family: "Segoe UI", sans-serif; line-height: 1.6; color: var(--content-color) !important; background: #f8fafc; }
+    .pagedjs_sheet { width: min(210mm, 100%); max-width: 100%; margin: 24px auto !important; padding: 18mm; background: #ffffff; box-shadow: none; }
+    .page { position: relative; margin: 0; max-width: 100%; }
+    .page-block, .page-footer { color: var(--content-color); }
+    .pagedjs_sheet::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 35%), radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.12), transparent 40%);
+      pointer-events: none;
+    }
+    .page-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.2rem; padding: 1rem 1.2rem; background: linear-gradient(135deg, #f97316 0%, #8b5cf6 100%); border-radius: 16px; color: #ffffff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .book-title { font-size: 2rem; margin: 0; }
+    .page-subtitle { color: rgba(255, 255, 255, 0.85); margin: 0.25rem 0 0; }
+    .animated-badge { display: inline-block; padding: 0.5rem 1rem; border-radius: 999px; background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%); color: #ffffff; font-size: 0.9rem; animation: pulse 2.5s ease-in-out infinite alternate, hueRotate 6s linear infinite; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page-block { margin-bottom: 1.4rem; }
+    .page-block h2 { font-size: 1.25rem; margin-bottom: 0.7rem; }
+    .page-block p { margin: 0 0 1rem; }
+    .page-block ul { margin: 0; padding-left: 1.2rem; }
+    .page-block li { margin-bottom: 0.6rem; }
+    .page-footer { text-align: right; font-size: 0.9rem; color: #4b5563; margin-top: 2rem; }
+    @keyframes pulse { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-8px); opacity: 0.85; } }
+    @keyframes hueRotate { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+  </style>
+  <script>
+    window.PagedConfig = {
+      auto: false,
+      after: (flow) => {
+        console.log('Paged.js render complete', flow);
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="book">
+    <article class="page">
+      <header class="page-header">
+        <div>
+          <h1 class="book-title">Diplomski rad</h1>
+          <p class="page-subtitle">Pregled stranica sa Paged.js</p>
+        </div>
+        <span class="animated-badge">Animacija</span>
+      </header>
+      <section class="page-block">
+        <h2>Uvod</h2>
+        <p>Ovo je primjer teksta koji pokazuje kako se HTML može prikazati kao paginirani dokument pomoću Paged.js. Sadržaj se prikazuje kao da scrollaš kroz pdf stranice bez vidljivih rubova.</p>
+        <p>Stranica koristi jednostavnu animaciju kako bi pokazala da pregledni sadržaj radi, ali za ispis se animacija neće reproducirati.</p>
+      </section>
+      <section class="page-block">
+        <h2>Sadržaj</h2>
+        <p>Dokument sadrži naslove, odlomke i popis. Ako se pravilno renderira, dno jedne stranice i vrh sljedeće tada će se logički nastaviti.</p>
+        <ul>
+          <li>Naziv rada i izrađivač</li>
+          <li>Razrada teme i zaključak</li>
+          <li>Značajka paginacije i stilova</li>
+        </ul>
+      </section>
+      <section class="page-block slider-block">
+        <label for="color-slider">Promijeni boju osnovnog teksta</label>
+        <input id="color-slider" type="range" min="0" max="100" value="0" />
+        <p id="color-value">Crno</p>
+      </section>
+      <footer class="page-footer">Stranica 1</footer>
+    </article>
+    <article class="page">
+      <header class="page-header">
+        <div>
+          <h1 class="book-title">Paginacija</h1>
+          <p class="page-subtitle">Nastavak dokumenta</p>
+        </div>
+        <span class="animated-badge">Pregled</span>
+      </header>
+      <section class="page-block">
+        <h2>Metodologija</h2>
+        <p>Ovaj dio navodi korake koje će čitatelj pratiti tijekom procesa obrade rada. Paged.js prikazuje svaku stranicu odvojeno, ali se stilovi nastavljaju bez razmaka.</p>
+        <p>Testiramo oblikovanje i raspored, pa je dobro da se sadržaj pravilno prelomi na sljedeću stranicu.</p>
+      </section>
+      <section class="page-block">
+        <h2>Zaključak</h2>
+        <p>Za prikaz u pregledniku bit će potrebno pokrenuti stranicu preko HTTP servera da Paged.js može dohvatiti stilove bez blokade. Nakon toga vidiš prijelaz između stranica u normalnom pregledu.</p>
+      </section>
+      <footer class="page-footer">Stranica 2</footer>
+    </article>
+  </div>
+  <script src="script.js"></script>
+  <script src="paged.polyfill.js"></script>
+</body>
+</html>

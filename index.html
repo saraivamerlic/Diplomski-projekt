@@ -27,6 +27,12 @@
       @top-left { content: none; }
       @bottom-right { content: none; }
     }
+    /* Named page za naslovnice — bez margina, bez zaglavlja/podnožja */
+    @page cover {
+      margin: 0;
+      @top-left { content: none; }
+      @bottom-right { content: none; }
+    }
 
     :root { --content-color: #111827; --accent: #4338ca; }
     body { font-family: "Segoe UI", "Times New Roman", serif; line-height: 1.55; color: var(--content-color); background: #f8fafc; }
@@ -191,18 +197,28 @@
     .formula .num-label { color: #6b7280; font-family: "Segoe UI", sans-serif; font-size: 11pt; }
     sub, sup { font-size: 0.78em; }
 
-    /* Cover page */
+    /* Cover pages — svaka zauzima točno jednu A4 stranicu bez margina */
     .cover {
-      min-height: 257mm;
+      page: cover;
+      break-before: page;
+      break-after: page;
+      page-break-before: always;
+      page-break-after: always;
+      height: 297mm;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       text-align: center;
-      padding: 25mm 20mm;
+      padding: 30mm 22mm 25mm;
       background: linear-gradient(160deg, #eef2ff 0%, #fdf2f8 100%);
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
+    /* Prva naslovnica ne prelama prije sebe — počinje na str. 1 */
+    .cover.first { break-before: avoid; page-break-before: avoid; }
+    /* h1 unutar naslovnica ne smije forsirati dodatni prijelom */
+    .cover h1 { break-before: avoid !important; page-break-before: avoid !important; }
     .cover .uni { font-size: 14pt; letter-spacing: 0.08em; margin: 0; color: #1e293b; }
     .cover .faculty { font-size: 12pt; margin: 0.3rem 0 3rem; color: #334155; }
     .cover .author { font-size: 13pt; margin: 0.5rem 0; color: #1e293b; }
@@ -240,26 +256,42 @@
 <body>
   <div class="book thesis">
 
-    <!-- ================= COVER ================= -->
-    <section class="cover">
+    <!-- ================= COVER 1 ================= -->
+    <section class="cover first">
       <div>
         <p class="uni">SVEUČILIŠTE U ZAGREBU</p>
         <p class="faculty">GRAFIČKI FAKULTET</p>
+      </div>
 
+      <div>
         <p class="author">SARA IVA MERLIĆ</p>
-
         <h1 class="title">ANALIZA PRIJENOSA BOJE KOD VIŠEBOJNIH REPRODUKCIJA S UV-SUŠEĆIM I KONVENCIONALNIM TISKARSKIM BOJAMA</h1>
-
         <p class="kind">DIPLOMSKI RAD</p>
+      </div>
+
+      <div>
         <p class="smjer">Smjer: Dizajn grafičkih proizvoda</p>
+        <p class="place">Zagreb, 2026.</p>
+      </div>
+    </section>
+
+    <!-- ================= COVER 2 ================= -->
+    <section class="cover">
+      <div>
+        <p class="author">SARA IVA MERLIĆ</p>
+      </div>
+
+      <div>
+        <h1 class="title">ANALIZA PRIJENOSA BOJE KOD VIŠEBOJNIH REPRODUKCIJA S UV-SUŠEĆIM I KONVENCIONALNIM TISKARSKIM BOJAMA</h1>
+        <p class="kind">DIPLOMSKI RAD</p>
       </div>
 
       <div class="mentor-block">
         <p><strong>Mentor:</strong></p>
         <p>Izv. prof. dr. sc. Irena Bates</p>
-        <p style="margin-top:0.8rem"><strong>Studentica:</strong></p>
+        <p style="margin-top:1rem"><strong>Student:</strong></p>
         <p>Sara Iva Merlić</p>
-        <p class="place">Zagreb, 2026.</p>
+        <p class="place" style="margin-top:1.5rem">Zagreb, 2026.</p>
       </div>
     </section>
 
@@ -434,7 +466,10 @@
       </table>
 
       <figure>
-        <img src="images/image11.jpeg" alt="Kontrolni strip" />
+        <div style="display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap;">
+          <img src="images/image11.jpeg" alt="Kontrolni strip (prikaz 1)" style="max-height:60mm; width:auto;" />
+          <img src="images/image12.jpeg" alt="Kontrolni strip (prikaz 2)" style="max-height:60mm; width:auto;" />
+        </div>
         <figcaption>Slika 6. Kontrolni strip s punim poljima koja služe za mjerenje primanja boje na boju kod višebojnih reprodukcija.</figcaption>
       </figure>
 

@@ -32,6 +32,50 @@
     body { font-family: "Segoe UI", "Times New Roman", serif; line-height: 1.55; color: var(--content-color); background: #f8fafc; }
     .pagedjs_sheet { background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
 
+    /* ============ PRINT ============
+       Osigurava da se sve prikaže pri ispisu:
+       - forsira zadržavanje boja i pozadina (print-color-adjust)
+       - poništava fiksne/apsolutne pozadinske slojeve iz style.css koji bi mogli prekriti sadržaj
+       - uklanja animacije, sjene i flex centriranje koje ometaju Paged.js sheets
+       - eksplicitno postavlja crn tekst na bijelu podlogu za pouzdanost
+    */
+    @media print {
+      html, body {
+        background: #ffffff !important;
+        color: #111827 !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        animation: none !important;
+        overflow: visible !important;
+      }
+      html, body, *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+      body::before,
+      html::before { display: none !important; content: none !important; }
+      .book { max-width: none !important; margin: 0 !important; display: block !important; }
+      .pagedjs_sheet {
+        box-shadow: none !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+      }
+      .pagedjs_pages { display: block !important; }
+      /* Fallback za slučaj da netko ispisuje bez Paged.js paginacije */
+      .thesis h1, .thesis h2, .thesis h3, .thesis p, .thesis li, .thesis td, .thesis th,
+      figcaption, .table-caption, .keywords, .abstract-block p {
+        color: #111827 !important;
+      }
+      .thesis h1 { color: #4338ca !important; }
+      table.thesis-table th { background: #eef2ff !important; color: #1e293b !important; }
+      .abstract-block { background: #f5f3ff !important; }
+      .cover { background: linear-gradient(160deg, #eef2ff 0%, #fdf2f8 100%) !important; }
+      .cover .title { color: #4338ca !important; }
+      figure, table.thesis-table, .formula { break-inside: avoid; page-break-inside: avoid; }
+    }
+
     /* Thesis typography */
     .thesis { font-size: 11.5pt; text-align: justify; hyphens: auto; }
     .thesis h1 {
@@ -80,6 +124,72 @@
       margin-top: 0.4rem;
       font-style: italic;
     }
+
+    /* Tables */
+    .thesis .table-caption {
+      font-size: 10.5pt;
+      color: #4b5563;
+      font-style: italic;
+      text-indent: 0;
+      margin: 1.2rem 0 0.4rem;
+      text-align: center;
+    }
+    table.thesis-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 auto 1.2rem;
+      font-size: 10.5pt;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    table.thesis-table th,
+    table.thesis-table td {
+      border: 1px solid #cbd5e1;
+      padding: 0.35rem 0.55rem;
+      vertical-align: middle;
+    }
+    table.thesis-table th {
+      background: #eef2ff;
+      color: #1e293b;
+      font-weight: 600;
+      text-align: center;
+    }
+    table.thesis-table td.num { text-align: center; }
+    table.thesis-table caption {
+      caption-side: top;
+      font-style: italic;
+      color: #4b5563;
+      padding-bottom: 0.4rem;
+      font-size: 10.5pt;
+    }
+    table.thumb-grid td { text-align: center; padding: 4px; }
+    table.thumb-grid img { max-width: 34mm; height: auto; border: 1px solid #e5e7eb; }
+
+    /* Formulas */
+    .formula {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5rem;
+      margin: 0.9rem auto 1.2rem;
+      font-family: "Cambria Math", "Times New Roman", serif;
+      font-size: 12pt;
+    }
+    .formula .expr {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .formula .frac {
+      display: inline-flex;
+      flex-direction: column;
+      text-align: center;
+      line-height: 1.1;
+    }
+    .formula .frac .num { border-bottom: 1px solid currentColor; padding: 0 0.35rem; }
+    .formula .frac .den { padding: 0.15rem 0.35rem 0; }
+    .formula .num-label { color: #6b7280; font-family: "Segoe UI", sans-serif; font-size: 11pt; }
+    sub, sup { font-size: 0.78em; }
 
     /* Cover page */
     .cover {
@@ -294,6 +404,388 @@
       </figure>
 
       <p>Kako bi se stvorila jasna razlika između stilova namijenjenih zaslonima i onih namijenjenih tisku, uveden je @page, pravilo koje definira ponašanje elemenata na trenutnoj stranici prilikom ispisa, poput veličine papira, margina i orijentacije. Detaljan opis i funkcija pravila @page i njegovih derivata objavljeni su pod nazivom CSS Paged Media Module Level 3. Ovaj CSS modul određuje kako se stranice generiraju i raspoređuju kako bi se zadržao fragmentirani sadržaj u prezentaciji sa stranicama [13]. Modul omogućuje kontrolu svojstava stranice, uključujući margine, veličinu i orijentaciju, kao i definiranje zaglavlja i podnožja. Osim toga, proširuje mogućnosti generiranog sadržaja omogućujući automatsko numeriranje stranica te dinamičko prikazivanje zaglavlja i podnožja [13]. Upravo je CSS Paged Media kao temelj omogućio stvaranje i razvoj softverske biblioteke otvorenog koda Paged.js. Paged.js djeluje kao polyfill za CSS module za ispis sadržaja koristeći značajke koje preglednici još izvorno ne podržavaju [11]. Polyfill je dio koda (najčešće JavaScript na webu) koji se koristi za pružanje moderne funkcionalnosti na starijim web preglednicima koji ga izvorno ne podržavaju. To je način popunjavanja rupa u kodu web preglednika kako bi se uvele nove funkcije poput mogućnosti kontrole svojstava stranice te definiranja zaglavlja i podnožja [14]. Ukratko, softverska biblioteka Paged.js koristi CSS pravila kako bi HTML dokument prikazan kroz web preglednik pravilno paginirala i pripremila za generiranje PDF-a spremnog za tisak (Slika 5.).</p>
+    </section>
+
+    <!-- ================= 3. EKSPERIMENTALNI DIO ================= -->
+    <section>
+      <h1>3. Eksperimentalni dio</h1>
+
+      <h2>3.1 Plan rada i metodologija ispitivanja</h2>
+      <p>Eksperimentalni dio rada obuhvatit će analizu otisaka izrađenih UV-sušećim i konvencionalnim tiskarskim bojama. U istraživanju će se uspoređivati UV otisak s konvencionalnim otiscima izrađenim bojama triju različitih proizvođača tiskarskih boja, označeni slovima A, B i C. Analiza će se izvršiti na kontrolnim stripovima s poljima koja sadrže obojenje crveno, zeleno, plavo i smeđe (Slika 6.) koji služe za mjerenje primanja boje na boju kod višebojnih reprodukcija. Kvaliteta reprodukcije analizirat će se pomoću prijenosnog spektrofotometra X-Rite eXact Standard kojim će se mjeriti integralna optička gustoća boja i primanje boje na boju. Uz mjernu analizu otiska izvest će se i slikovna analiza površine otiska. Otisak će se snimati digitalnim mikroskopom Dino-Lite AM4917MZT EDGE PLUS, a dobivene fotografije analizirat će se u programu ImageJ kako bi se dobila informacija o pokrivenosti površine s bojom. Dobiveni rezultati statistički će se obraditi, usporediti i interpretirati. Na temelju rezultata donijet će se zaključak o mogućnosti postizanja usporedive kvalitete reprodukcije konvencionalnim bojama u odnosu na UV-sušeće boje.</p>
+
+      <h2>3.2 Korišteni materijali</h2>
+      <p>Svi analizirani otisci tiskani su na kartonu TopFold GC2 (PT Riau Paperboard International, Riau, Indonezija) metaliziranom Ultralen folijom (Ultralen Film GmbH, Weil am Rhein, Njemačka). Pri otiskivanju i UV-sušećih i konvencionalnih boja korištena je ofsetna tehnika tiska.</p>
+
+      <p>Kako nije moguće na istom tiskarskom stroju tiskati UV-sušeće i konvencionalne boje, korištena su dva različita tiskarska stroja. Otisci s UV-sušećim bojama rađeni su s jednim ili dva sloja UV pokrivne bijele boje na tiskarskom stroju KBA RA 106 X-7 + L RS (Koenig & Bauer AG, Würzburg, Njemačka). U procesu tiska korištene su FD LED EU S5 UV boje te Flash Dry bijela boja kao osnovni premaz, proizvođača Toyo Ink SDN BHD (Toyo Ink Europe, Oissel, Francuska). Ove UV boje čine seriju niskoenergetskih UV boja za LED/UV ofsetne tiskarske sustave. Ističu se brzim stvrdnjavanjem s minimalnom upotrebom LED/UV energije, visokim sjajem te stabilnim i visokokvalitetnim rezultatima tiska. Tiskarske boje ove serije usklađene su sa zahtjevima REACH-a, EuPIA smjernicama i normom ISO 2846-1 koja definira preciznu boju i prozirnost tiskarskih boja koje se koriste u četverobojnom (CMYK) ofsetnom tisku, čime podržava postizanje standarda ISO 12647-2 koji definira parametre i točne vrijednosti za reprodukciju boja i kontrolu procesa u ofsetnom tisku. Također su certificirane od strane INGEDE 11 za dobra svojstva uklanjanja boje pri recikliranju [18].</p>
+
+      <p>Uz UV otiske, ispitivani su otisci nastali s konvencionalnim tiskarskim bojama, kod kojih je nanesen jedan sloj pokrivne bijele boje. Pri otiskivanju triju naklada s različitim konvencionalnim bojama korišten je isti tiskarski stroj KBA Rapida 105, s brzinom od 8000 listova na sat. U Tablici 1. prikazane su korištene oznake za analizirane otiske.</p>
+
+      <p class="table-caption">Tablica 1. Korištene oznake za analizirane otiske</p>
+      <table class="thesis-table">
+        <thead>
+          <tr><th>Vrsta tiskarske boje</th><th>Sušenje</th><th>Oznaka</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>UV-sušeća boja</td><td>Monokromatsko UV sušenje</td><td class="num">UV</td></tr>
+          <tr><td>I. Konvencionalna boja</td><td>Oksidativno sušenje</td><td class="num">A</td></tr>
+          <tr><td>II. Konvencionalna boja</td><td>Brzo oksidativno sušenje</td><td class="num">B</td></tr>
+          <tr><td>III. Konvencionalna boja</td><td>Oksidativno sušenje</td><td class="num">C</td></tr>
+        </tbody>
+      </table>
+
+      <figure>
+        <img src="images/image11.jpeg" alt="Kontrolni strip" />
+        <figcaption>Slika 6. Kontrolni strip s punim poljima koja služe za mjerenje primanja boje na boju kod višebojnih reprodukcija.</figcaption>
+      </figure>
+
+      <p>Prva korištena konvencionalna boja bila je SunTec® V-Foil tiskarska boja proizvođača Sun Chemical, DIC Group, New Jersey, USA (oznaka A). Boje pripadaju osnovnim bojama za primjenu na filmu i foliji, no nisu namijenjene tisku na osjetljive podloge ili prehrambenu ambalažu. Procesne boje su formulirane u skladu s normom ISO 2846-1 i omogućuju tisak u skladu s normom ISO 12647-2. Ove konvencionalne boje imaju izvrsno svojstvo oksidativnog sušenja, posebno su formulirane za izvrsno prianjanje na nepropusne podloge te su dostupne za različite podloge kao što su premazani i nepremazani papiri i kartoni. Bazirane su na uljima i ne sadrže mineralna ulja [17].</p>
+
+      <p>Druga korištena konvencionalna tiskarska boja bila je također bazirana na ulju, naziva Novaplast® BIO serije Flint Group Packaging Solutions, St Helier, Jersey, bazirana na BIO-uljima formuliranim s obnovljivim sirovinama za otiskivanje prema standardu ISO 12647-2. Glavna prednost Novaplast® BIO serije je izuzetno brzo oksidativno sušenje. Formulirane su za tisak na folije i druge neupijajuće podloge te premazane papire, međutim nisu namijenjene za upotrebu za pakiranja hrane bez funkcionalne barijere [15].</p>
+
+      <p>Treća korištena konvencionalna tiskarska boja je MGA® LABEL 2100 niskomigrirajuća boja na bazi ulja proizvođača Hubergroup Ireland Ltd. Omogućuje stabilan film tiskarske boje na otisku koji nastaje zbog dobrog oksidativnog svojstva sušenja. Omogućuje dobar otisak na rubovima preklopnih kartona prilikom izrade i slaganja kartonske ambalaže te je dizajnirana za upotrebu na vanjskoj strani prehrambene ambalaže koja nije u izravnom kontaktu s hranom. Ima nisku razinu migracije (&lt; 10 mg/dm²) u skladu s važećim europskim i nacionalnim zakonskim zahtjevima, što ju po EuPIA definiciji čini prikladnom za tisak na podloge u kontaktu s hranom. Otisci otisnuti ovim tiskarskim bojama otporni su na razmazivanje, imaju izvrsnu otpornost na trenje te su boje formulirane bez mineralnih ulja i kobalta. Ova serija boja može se koristiti na raznim podlogama, od izuzetno tankih polimernih folija od 50 μm do teških kartonskih materijala s gramaturom od 1000 g/m² [16].</p>
+
+      <h2>3.3 Korišteni uređaji</h2>
+      <p>U svrhu ispitivanja svakog pojedinog uzorka korišten je prijenosni spektrofotometar X-Rite eXact Standard (Slika 7.). Spektrofotometrom su mjerene integralne optičke gustoće boja i primanje boje na boju (eng. trapping). Spektrofotometar X-Rite eXact Standard posebno je razvijen za primjenu u tiskarama i industriji ambalaže, gdje služi za mjerenje i provjeru boje tijekom procesa tiska. Uređaj omogućuje provjeru CMYK i spot boja te podržava primjenu industrijskih standarda boja, čime doprinosi većoj kontroli i dosljednosti tiskarskog procesa [19]. Specifikacije uređaja nalaze se u Tablici 2. Prikupljeni podaci pretvaraju se u mjerne vrijednosti koje omogućuju deskriptivnu analizu i prikaz rezultata. Osim mjerenja optičke gustoće, eXact Standard pruža i kolorimetrijske podatke, što omogućuje precizniju procjenu podudaranja otisnute boje sa zadanim standardom. Uređaj podržava sve vodeće standarde u grafičkoj industriji, uključujući G7, ISO, PSO i Japan Color [19]. Uređaj omogućuje pristup najnovijim Pantone bibliotekama i PantoneLIVE standardima (uz odgovarajuću licencu). Napredne mogućnosti mjerenja uključuju istovremeno mjerenje prema uvjetima M0, M1, M2 i M3, te podršku za mjerni uvjet M1 koji omogućuje precizno mjerenje fluorescentnih tiskarskih boja. Olakšava stvaranje i upravljanje standardnim bojama izravno na uređaju [19].</p>
+
+      <figure>
+        <img src="images/image15.jpeg" alt="X-Rite eXact Standard spektrofotometar" />
+        <figcaption>Slika 7. Prijenosni spektrofotometar X-Rite eXact Standard.</figcaption>
+      </figure>
+
+      <p class="table-caption">Tablica 2. Specifikacije uređaja X-Rite eXact Standard [20]</p>
+      <table class="thesis-table">
+        <tbody>
+          <tr><th>Spektralni analizator</th><td>DRS spektralni mehanizam</td></tr>
+          <tr><th>Spektralni raspon</th><td>400 nm – 700 nm s intervalom od 10 nm</td></tr>
+          <tr><th>Geometrija mjerenja</th><td>0°: optika od 45° prema ISO 5-4:2009(E)</td></tr>
+          <tr><th>Otvor blende</th><td>1,5 mm, 2 mm, 4 mm ili 6 mm</td></tr>
+          <tr><th>Izvor svjetlosti</th><td>Volfram punjen plinom (osvjetljivač tipa A) i UV LED</td></tr>
+          <tr><th>Uvjeti mjerenja</th><td>Prema ISO 13655:2009; M0: nepolarizirano, bez filtera, UV uključeno; M1: dnevno svjetlo, D50; M2: filter bez UV-a; M3: polarizacijski filter (opcija M3 nije dostupna za Xp modele)</td></tr>
+          <tr><th>Kalibracija</th><td>Automatska na integriranoj bijeloj referenci</td></tr>
+          <tr><th>Usklađenost među instrumentima</th><td>Prosjek: 0,25 ΔE<sub>ab</sub>, Max.: 0,45 ΔE<sub>ab</sub> (za M3: 0,55 ΔE<sub>ab</sub>). Mjerenja korištenjem X-Rite proizvodnih standarda pri 23 °C ± 1 °C, 40–60 % relativne vlažnosti za sve načine mjerenja na 12 BCRA pločica u boji i bijeloj keramičkoj referenci (D50, 2°).</td></tr>
+          <tr><th>Kratkoročna ponovljivost — bijela</th><td>0,05 ΔE<sub>ab</sub> (standardna devijacija) bijela BCRA (pogreška u usporedbi sa srednjom vrijednošću 10 mjerenja svakih 5 sekundi)</td></tr>
+          <tr><th>Kratkoročna ponovljivost — gustoća</th><td>± 0,01 D za CMYK (mjerenja statusa E ili T, maksimalna pogreška u usporedbi sa srednjom vrijednošću 10 mjerenja svakih 5 sekundi pri 2,0 D, osim za M3 žutu pri 1,7 D)</td></tr>
+          <tr><th>Duljina skeniranja</th><td>Max. 1120 mm (44″)</td></tr>
+          <tr><th>Raspon radne temperature</th><td>10 – 35 °C, max. relativna vlažnost 30–85 % (bez kondenzacije)</td></tr>
+          <tr><th>Raspon temperature skladištenja</th><td>−20 do 50 °C</td></tr>
+          <tr><th>Sučelje za prijenos podataka</th><td>USB 2.0</td></tr>
+          <tr><th>Napajanje</th><td>X-Rite p/n: SE30-177 / 100–240 VAC, 50/60 Hz, 12 VDC @ 2,5 A</td></tr>
+          <tr><th>Baterija</th><td>X-Rite p/n: SE15-44 / Litij-ionska, 7,4 VDC, 2200 mAh</td></tr>
+          <tr><th>Težina</th><td>0,7 kg</td></tr>
+          <tr><th>Dimenzije</th><td>V: 7,6 cm; Š: 7,8 cm; D: 18 cm</td></tr>
+        </tbody>
+      </table>
+
+      <p>Osim spektrofotometrijskih mjerenja, ispitana je i pokrivenost površine bojom uzorka. Za to je korišten Dino-Lite digitalni mikroskop (Slika 8.). Dino-Lite AM4917MZT digitalni mikroskop pripada EDGE PLUS seriji unutar Universal asortimana. Omogućuje povećanje od 10 do 220 ×, rezoluciju 1,3 MP te USB 2.0 povezivanje s brzinom do 30 fps. Odlikuje ga visoka kvaliteta slike i vjerna reprodukcija boja u kompaktnom metalnom kućištu. Ostale specifikacije navedene su u Tablici 3. [21]. Posebna značajka ovog modela je mogućnost procjene dubine analizom varijacija u fokusu, čime se može odrediti topografija površine, uključujući udubljenja i žljebove [21]. DinoCapture 2.0 softver korišten je za pregled i spremanje snimljenih mikroskopskih fotografija otisaka.</p>
+
+      <figure>
+        <img src="images/image16.jpeg" alt="Dino-Lite mikroskop" />
+        <figcaption>Slika 8. Dino-Lite AM4917MZT digitalni mikroskop.</figcaption>
+      </figure>
+
+      <p class="table-caption">Tablica 3. Specifikacije digitalnog mikroskopa Dino-Lite AM4917MZT EDGE PLUS [21]</p>
+      <table class="thesis-table">
+        <tbody>
+          <tr><th>Svjetlo / LED</th><td>Bijelo</td></tr>
+          <tr><th>Broj LED žaruljica</th><td>8</td></tr>
+          <tr><th>Povećanje</th><td>10× – 220×</td></tr>
+          <tr><th>Radna udaljenost</th><td>Standardna</td></tr>
+          <tr><th>Vrsta senzora</th><td>CMOS</td></tr>
+          <tr><th>Rezolucija</th><td>1,3 megapiksela (1280 × 1024)</td></tr>
+          <tr><th>Maksimalni broj sličica u sekundi</th><td>30 fps</td></tr>
+          <tr><th>Sučelje</th><td>USB 2.0</td></tr>
+          <tr><th>Operativni sustav</th><td>Windows 7, 8, 10 i 11; macOS 11.1 i noviji</td></tr>
+          <tr><th>Podržani formati slika (Windows)</th><td>BMP, GIF, PNG, JPG, TIF, RAS, PNM, TGA, PCX, MNG, WBMP, JP2, JPC, PGX</td></tr>
+          <tr><th>Podržani video formati (Windows)</th><td>WMV, FLV, SWF (max 1,3 MP)</td></tr>
+          <tr><th>Materijal</th><td>Metal</td></tr>
+          <tr><th>Dimenzije</th><td>10,5 cm (D) × 3,2 cm (Ø)</td></tr>
+          <tr><th>Masa</th><td>130 g</td></tr>
+        </tbody>
+      </table>
+
+      <h2>3.4 Korištene metode</h2>
+      <p>Za izračun primanja boja na boju (eng. trapping) korištene su Preucilova, Ritzova i Brunnerova metoda. Trapping (T) je u sve tri metode izračunat pomoću integralne optičke gustoće tiskarske boje izmjerene spektrodenzitometrom. U korištenim jednadžbama D<sub>1</sub> označava gustoću prve otisnute tiskarske boje nakon prvog tiskovnog prijelaza, D<sub>2</sub> gustoću druge boje otisnute samostalno na podlogu, dok D<sub>op</sub> predstavlja gustoću druge boje otisnute preko prve boje tijekom drugog tiskovnog prolaza (eng. overprint). Preucilova metoda je linearna korelacija između vrijednosti primanja boje na boju i vrijednosti gustoće tiskarske boje overprinta [22]. Preucilova jednadžba (Formula 1) mjeri sposobnost da već otisnuta boja primi sljedeći nanos boje.</p>
+
+      <div class="formula">
+        <span class="expr">
+          T&nbsp;=&nbsp;
+          <span class="frac"><span class="num">D<sub>op</sub> − D<sub>1</sub></span><span class="den">D<sub>2</sub></span></span>
+          &nbsp;× 100&nbsp;%
+        </span>
+        <span class="num-label">(1)</span>
+      </div>
+
+      <p>Osnova Ritzove metode je pretpostavka da varijacije u prihvaćanju boje proizlaze iz nejednakog širenja prethodno otisnute tiskarske boje. Takva struktura sloja tiskarske boje slična je strukturi rasterskog sloja boje, iz tog je razloga Ritzova jednadžba (Formula 2) opisana modificiranom Murray–Daviesovom formulom [23].</p>
+
+      <div class="formula">
+        <span class="expr">
+          T&nbsp;=&nbsp;
+          <span class="frac"><span class="num">1 − 10<sup>−(D<sub>op</sub> − D<sub>1</sub>)</sup></span><span class="den">1 − 10<sup>−D<sub>2</sub></sup></span></span>
+          &nbsp;× 100&nbsp;%
+        </span>
+        <span class="num-label">(2)</span>
+      </div>
+
+      <p>Brunnerova metoda, poput Ritzove, koristi modificiranu Murray–Daviesovu jednadžbu (Formula 3).</p>
+
+      <div class="formula">
+        <span class="expr">
+          T&nbsp;=&nbsp;
+          <span class="frac"><span class="num">D<sub>op</sub> − D<sub>1</sub></span><span class="den">D<sub>2</sub> − D<sub>1</sub></span></span>
+          &nbsp;× 100&nbsp;%
+        </span>
+        <span class="num-label">(3)</span>
+      </div>
+
+      <p>Nakon prikupljanja podataka izmjerenih spektrodenzitometrom, podaci su organizirani u tablice te je izračunat T (eng. trapping) primjenom prethodno navedenih metoda — Preucilove, Ritzove i Brunnerove. Dobiveni rezultati uspoređeni su s rezultatima slikovne analize pokrivenosti površine te su na temelju usporedbe izrađeni grafovi (Slike 9. – 12.).</p>
+
+      <h2>3.5 ImageJ</h2>
+      <p>ImageJ je besplatan softver otvorenog koda namijenjen obradi i analizi znanstvenih slika, fotografija ili otisaka. Zahvaljujući svojim brojnim mogućnostima, popularan je u različitim znanstvenim područjima poput biologije i medicine, ali svoju široku primjenu pronalazi i na području grafičke tehnologije. Glavne mogućnosti ImageJ uključuju otvaranje i obradu različitih formata slika, mjerenje parametara na slikama, analizu snimaka i slika, brojanje objekata na slici i mnoge druge. ImageJ ima mnoge derivate i varijante, uključujući ImageJ2, Fiji i druge. Program je izvorno razvijen 1997. godine kao višeplatformska verzija programa NIH (National Institutes of Health) Image [24]. Tijekom godina ImageJ se postupno razvijao i nadograđivao zahvaljujući kontinuiranom radu Waynea Rasbanda, koji je dodavao nove funkcionalnosti prema zahtjevima korisnika [24]. Zahvaljujući aktivnoj zajednici korisnika i programera, razvijeno je gotovo tisuću dodataka koji omogućuju proširenje funkcionalnosti ImageJ-a i njegovu prilagodbu različitim potrebama. Druga generacija programa ImageJ, poznata pod nazivom ImageJ2, razvijana je od 2010. godine kako bi se razlikovala od izvornog ImageJ-a. Distribucija Fiji uključuje i ImageJ 1.x i ImageJ2 te sadrži sloj za kompatibilnost koji omogućuje neprimjetnu konverziju između podatkovnih struktura obiju verzija kada je to potrebno [24]. ImageJ je dostupan za Windows, macOS i Linux.</p>
+
+      <p>ImageJ je u svrhu ovog rada korišten za analizu mikroskopskih snimki otisaka. Odnosno, korišten je za mjerenje pokrivenosti površine određene boje na otiscima. U analizi se promatraju četiri otiska u različitim bojama: crvenoj, zelenoj, plavoj i smeđoj/crnoj. Naglasak se stavlja na posljednju nanesenu tiskarsku boju, koja je najčešće žuta ili magenta, pri čemu se izračunava površina koja nije prekrivena tom bojom. Pomoću alata za segmentaciju i odabir moguće je izdvojiti željene dijelove slike te ih kvantitativno analizirati, čime se dobiva precizno mjerenje pokrivenosti površine tih otisaka.</p>
+
+      <p>Prije same analize otisaka, potrebno je sve slike izrezati na jednake dimenzije unutar ImageJ programa. Time se osigurava standardizacija uzoraka i uklanjaju moguće razlike koje bi mogle nastati zbog različitih veličina ili pozicija fotografija te povećava točnost i pouzdanost dobivenih rezultata u daljnjoj analizi. Nakon standardizacije snimaka potrebno ih je analizirati, odnosno izmjeriti pokrivenost površine uzorka. Za analizu je korišten ImageJ plugin „RGB to CMYK“ koji pretvara nekalibriranu linearnu RGB sliku u nekalibrirani linearni 32-bitni CMYK stack. Analizom pokrivenosti površine boje dobiva se izračun površine (%area) koja nije prekrivena zadnje otisnutom bojom. Dobivene podatke potrebno je sistematizirati u tablicu za daljnju obradu i analizu.</p>
+    </section>
+
+    <!-- ================= 4. REZULTATI I RASPRAVA ================= -->
+    <section>
+      <h1>4. Rezultati i rasprava</h1>
+
+      <p>Evaluacija kvalitete primanja boje na boju kod višebojnih otisaka otisnutih konvencionalnim i UV tiskarskim bojama započela je mjerenjem integralne optičke gustoće boja spektrofotometrom X-Rite eXact Standard. Ispitivani su uzorci konvencionalnih boja triju različitih proizvođača — A, B i C — te uzorak UV tiskarske boje. Crveni (M+Y), zeleni (C+Y) i plavi (C+M) uzorak otisnuti su punim tonovima dviju tiskarskih boja, dok je četvrti uzorak crne boje (C+M+Y) otisnut punim tonom triju boja — žute, magente i cijana. Rezultati mjerenja spektrofotometrom sistematizirani su i prikazani u Tablicama 4. – 7.</p>
+
+      <p class="table-caption">Tablica 4. Spektrofotometrijske vrijednosti optičke gustoće za zelenu boju</p>
+      <table class="thesis-table">
+        <thead>
+          <tr><th rowspan="2">Uzorak</th><th colspan="3">Optička gustoća (C+Y)</th></tr>
+          <tr><th>D<sub>1</sub></th><th>D<sub>2</sub></th><th>D<sub>op</sub></th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">A</td><td class="num">0,15 ± 0,01</td><td class="num">1,16 ± 0,02</td><td class="num">1,38 ± 0,02</td></tr>
+          <tr><td class="num">B</td><td class="num">0,14 ± 0,00</td><td class="num">1,17 ± 0,02</td><td class="num">1,11 ± 0,01</td></tr>
+          <tr><td class="num">C</td><td class="num">0,15 ± 0,00</td><td class="num">1,36 ± 0,09</td><td class="num">1,17 ± 0,01</td></tr>
+          <tr><td class="num">UV</td><td class="num">0,13 ± 0,00</td><td class="num">1,18 ± 0,02</td><td class="num">1,06 ± 0,01</td></tr>
+        </tbody>
+      </table>
+
+      <p class="table-caption">Tablica 5. Spektrofotometrijske vrijednosti optičke gustoće za crvenu boju</p>
+      <table class="thesis-table">
+        <thead>
+          <tr><th rowspan="2">Uzorak</th><th colspan="3">Optička gustoća (M+Y)</th></tr>
+          <tr><th>D<sub>1</sub></th><th>D<sub>2</sub></th><th>D<sub>op</sub></th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">A</td><td class="num">0,69 ± 0,01</td><td class="num">1,15 ± 0,01</td><td class="num">1,38 ± 0,02</td></tr>
+          <tr><td class="num">B</td><td class="num">0,67 ± 0,01</td><td class="num">1,17 ± 0,01</td><td class="num">1,40 ± 0,01</td></tr>
+          <tr><td class="num">C</td><td class="num">0,64 ± 0,01</td><td class="num">1,39 ± 0,03</td><td class="num">1,45 ± 0,03</td></tr>
+          <tr><td class="num">UV</td><td class="num">0,58 ± 0,01</td><td class="num">1,14 ± 0,03</td><td class="num">1,39 ± 0,01</td></tr>
+        </tbody>
+      </table>
+
+      <p class="table-caption">Tablica 6. Spektrofotometrijske vrijednosti optičke gustoće za plavu boju</p>
+      <table class="thesis-table">
+        <thead>
+          <tr><th rowspan="2">Uzorak</th><th colspan="3">Optička gustoća (C+M)</th></tr>
+          <tr><th>D<sub>1</sub></th><th>D<sub>2</sub></th><th>D<sub>op</sub></th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">A</td><td class="num">0,41 ± 0,01</td><td class="num">1,23 ± 0,01</td><td class="num">1,26 ± 0,01</td></tr>
+          <tr><td class="num">B</td><td class="num">0,36 ± 0,00</td><td class="num">1,28 ± 0,02</td><td class="num">1,20 ± 0,02</td></tr>
+          <tr><td class="num">C</td><td class="num">0,38 ± 0,01</td><td class="num">1,28 ± 0,02</td><td class="num">1,24 ± 0,01</td></tr>
+          <tr><td class="num">UV</td><td class="num">0,34 ± 0,00</td><td class="num">1,20 ± 0,02</td><td class="num">1,23 ± 0,02</td></tr>
+        </tbody>
+      </table>
+
+      <p class="table-caption">Tablica 7. Spektrofotometrijske vrijednosti optičke gustoće za crnu boju</p>
+      <table class="thesis-table">
+        <thead>
+          <tr><th rowspan="2">Uzorak</th><th colspan="3">Optička gustoća (C+M+Y)</th></tr>
+          <tr><th>D<sub>1</sub></th><th>D<sub>2</sub></th><th>D<sub>op</sub></th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">A</td><td class="num">0,15 ± 0,00</td><td class="num">1,16 ± 0,02</td><td class="num">1,28 ± 0,02</td></tr>
+          <tr><td class="num">B</td><td class="num">0,15 ± 0,01</td><td class="num">1,17 ± 0,02</td><td class="num">1,36 ± 0,02</td></tr>
+          <tr><td class="num">C</td><td class="num">0,15 ± 0,01</td><td class="num">1,38 ± 0,04</td><td class="num">1,33 ± 0,02</td></tr>
+          <tr><td class="num">UV</td><td class="num">0,13 ± 0,00</td><td class="num">1,17 ± 0,02</td><td class="num">1,30 ± 0,01</td></tr>
+        </tbody>
+      </table>
+
+      <p>Prije usporedbe rezultata važno je napomenuti kako D<sub>1</sub> označava referentnu optičku gustoću prve otisnute boje, D<sub>2</sub> referentnu optičku gustoću druge boje pri tisku na podlogu, a D<sub>op</sub> optičku gustoću druge boje otisnute preko prve boje, odnosno njezin stvarni prijenos na prethodno otisnuti sloj. Usporedbom konvencionalnih tiskarskih boja (A, B i C) s UV-sušećom bojom uočene su određene razlike tijekom prijenosa boje. Kod zelenog uzorka (Tablica 4.) najveća D<sub>op</sub> vrijednost ostvarena je kod konvencionalne boje A, dok je najnižu vrijednost ostvarila UV-sušeća boja, što upućuje na nešto slabiji prijenos druge boje na prethodno otisnuti sloj. Kod konvencionalne boje C vrijednost D<sub>2</sub> je veća od D<sub>op</sub>, odnosno druga boja prenesena na prethodno otisnutu boju ostvarila je nešto manju optičku gustoću nego kada je otisnuta izravno na podlogu, što ukazuje na djelomično smanjenje prijenosa boje uslijed interakcije dvaju slojeva boje. Zeleni uzorak pokazuje najveće varijacije D<sub>op</sub> vrijednosti u odnosu na ostale analizirane uzorke, pri čemu je UV-sušeća boja ostvarila najnižu D<sub>op</sub> vrijednost među svim promatranim uzorcima (D<sub>op</sub> = 1,06 ± 0,01). Rezultati prikazani u Tablici 5. za crveni uzorak pokazuju da su varijacije vrijednosti D<sub>op</sub> za sve promatrane boje male te najveću vrijednost D<sub>op</sub> ima konvencionalna boja C, dok najmanju konvencionalna boja A. Vrijednosti D<sub>op</sub> kod svih promatranih boja su veće od D<sub>2</sub>, što prikazuje kako je optička gustoća druge boje prenesene na prethodno otisnutu boju veća nego kada je otisnuta izravno na podlogu. Od svih promatranih uzoraka najveću D<sub>op</sub> vrijednost imao je crveni uzorak konvencionalne boje C. Kod plavog uzorka (Tablica 6.), kod kojega je posljednja otisnuta boja bila magenta, D<sub>op</sub> vrijednosti nisu se znatno razlikovale od ostalih analiziranih uzoraka, kod kojih je posljednja otisnuta boja bila žuta. Najveću D<sub>op</sub> vrijednost ostvarila je konvencionalna boja A, dok najmanju konvencionalna boja B. Međutim, vrijednosti D<sub>2</sub> kod konvencionalnih boja B i C bile su veće od D<sub>op</sub>, što može upućivati na smanjenje prijenosa boje tijekom interakcije dvaju slojeva. Varijacije između D<sub>op</sub> vrijednosti su male te se ne pojavljuju značajne razlike između konvencionalnih i UV-sušeće boje. Kod crnog uzorka (Tablica 7.) D<sub>op</sub> vrijednosti su međusobno ujednačene za sve promatrane tiskarske boje. Najmanju D<sub>op</sub> vrijednost ostvarila je konvencionalna boja A, dok je najveću ostvarila konvencionalna boja B. Samo je kod konvencionalne boje C vrijednost D<sub>2</sub> veća od D<sub>op</sub> vrijednosti, što može značiti da je kod te boje prijenos tijekom interakcije dvaju slojeva smanjen. Usporedbom D<sub>op</sub> vrijednosti između različitih tiskarskih boja može se uočiti da su rezultati konvencionalnih boja u većini slučajeva veći od D<sub>op</sub> vrijednosti UV-sušeće boje. To upućuje na kvalitetniji prijenos druge boje na prethodno otisnuti sloj. Konačna procjena kvalitete primanja boje na boju treba se, međutim, temeljiti na vrijednostima trappinga, koje uzimaju u obzir odnos između D<sub>1</sub>, D<sub>2</sub> i D<sub>op</sub>.</p>
+
+      <p>Uz spektrofotometrijska mjerenja, uzorci su promatrani Dino-Lite mikroskopskom kamerom pri povećanju od 63,4× te je snimljeno 5 fotografija svakog uzorka. Snimke su zatim obrađene pomoću ImageJ softvera te je određen postotak ukupne prekrivene površine (area %) zadnjeg otisnutog nanosa tiskarske boje prikazan u Tablici 8. Tablica 9. prikazuje threshold primijenjen na slike prilikom njihove analize, gdje crveno područje predstavlja površinu zadnje otisnute boje.</p>
+
+      <p class="table-caption">Tablica 8. Postotak prekrivene površine zadnje otisnute boje dobiven analizom slike</p>
+      <table class="thesis-table">
+        <thead>
+          <tr><th rowspan="2">Ton</th><th colspan="4">Pokrivenost površine posljednje otisnute tiskarske boje</th></tr>
+          <tr><th>A</th><th>B</th><th>C</th><th>UV</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">C+Y</td><td class="num">67,31 %</td><td class="num">67,48 %</td><td class="num">75,19 %</td><td class="num">73,96 %</td></tr>
+          <tr><td class="num">M+Y</td><td class="num">91,58 %</td><td class="num">93,73 %</td><td class="num">96,97 %</td><td class="num">98,42 %</td></tr>
+          <tr><td class="num">C+M</td><td class="num">87,22 %</td><td class="num">81,71 %</td><td class="num">89,32 %</td><td class="num">92,63 %</td></tr>
+          <tr><td class="num">C+M+Y</td><td class="num">49,82 %</td><td class="num">54,41 %</td><td class="num">57,90 %</td><td class="num">31,68 %</td></tr>
+        </tbody>
+      </table>
+
+      <p>Iz Tablice 8. vidljivo je da je najveća ostvarena pokrivenost boje na boju slikovnom analizom na otisku C od 75,19 % kod tona C+Y, te zatim na UV otisku (A = 73,96 %). Ton M+Y ima najveću ostvarenu pokrivenost boje na boju na otisku UV (A = 98,42 %) te zatim na otisku C (A = 96,97 %). Najveća ostvarena pokrivenost boje na boju kod tona C+M dobivena je kod UV otiska (A = 92,63 %). Kod otiskivanja tona gdje su tri boje nanesene (C+M+Y) najveća ostvarena pokrivenost boje na boju dobivena je na otisku s C bojom od 57,90 %, a najmanja na otisku s UV bojom od 31,68 %.</p>
+
+      <p class="table-caption">Tablica 9. Analiza slike konvencionalnih i UV otisaka s tresholdom</p>
+      <table class="thesis-table thumb-grid">
+        <thead>
+          <tr><th>Ton</th><th>A</th><th>B</th><th>C</th><th>UV</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>C+Y</th>
+            <td><img src="images/image17.jpeg" alt="Threshold A – C+Y" /></td>
+            <td><img src="images/image18.jpeg" alt="Threshold B – C+Y" /></td>
+            <td><img src="images/image19.jpeg" alt="Threshold C – C+Y" /></td>
+            <td><img src="images/image20.jpeg" alt="Threshold UV – C+Y" /></td>
+          </tr>
+          <tr>
+            <th>M+Y</th>
+            <td><img src="images/image21.jpeg" alt="Threshold A – M+Y" /></td>
+            <td><img src="images/image22.jpeg" alt="Threshold B – M+Y" /></td>
+            <td><img src="images/image23.jpeg" alt="Threshold C – M+Y" /></td>
+            <td><img src="images/image24.jpeg" alt="Threshold UV – M+Y" /></td>
+          </tr>
+          <tr>
+            <th>C+M</th>
+            <td><img src="images/image25.jpeg" alt="Threshold A – C+M" /></td>
+            <td><img src="images/image26.jpeg" alt="Threshold B – C+M" /></td>
+            <td><img src="images/image27.jpeg" alt="Threshold C – C+M" /></td>
+            <td><img src="images/image28.jpeg" alt="Threshold UV – C+M" /></td>
+          </tr>
+          <tr>
+            <th>C+M+Y</th>
+            <td><img src="images/image29.jpeg" alt="Threshold A – C+M+Y" /></td>
+            <td><img src="images/image30.jpeg" alt="Threshold B – C+M+Y" /></td>
+            <td><img src="images/image31.jpeg" alt="Threshold C – C+M+Y" /></td>
+            <td><img src="images/image32.jpeg" alt="Threshold UV – C+M+Y" /></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Iz Tablice 9., u kojoj su prezentirane slike iz kojih se izvela slikovna analiza i mjerenje pokrivenosti boje na boju, potvrđuju se rezultati iz Tablice 8. Vidljivo je da otisak s UV bojom kod otiskivanja triju boja (C+M+Y) ostvaruje najmanju pokrivenost površine.</p>
+
+      <p>Usporedba rezultata pokrivenosti površine dobivene analizom slika i izračunatih vrijednosti primanja boje na boju korištenjem sve tri spomenute metode prikazana je Slikama 9. – 12.</p>
+
+      <figure>
+        <img src="images/image33.png" alt="Graf – konvencionalna boja A" />
+        <figcaption>Slika 9. Usporedba srednjih vrijednosti primanja boje na boju dobivenih Preucilovom, Ritzovom i Brunnerovom metodom te analizom slike za konvencionalnu tiskarsku boju A.</figcaption>
+      </figure>
+
+      <figure>
+        <img src="images/image34.png" alt="Graf – konvencionalna boja B" />
+        <figcaption>Slika 10. Usporedba srednjih vrijednosti primanja boje na boju dobivenih Preucilovom, Ritzovom i Brunnerovom metodom te analizom slike za konvencionalnu tiskarsku boju B.</figcaption>
+      </figure>
+
+      <figure>
+        <img src="images/image35.png" alt="Graf – konvencionalna boja C" />
+        <figcaption>Slika 11. Usporedba srednjih vrijednosti primanja boje na boju dobivenih Preucilovom, Ritzovom i Brunnerovom metodom te analizom slike za konvencionalnu tiskarsku boju C.</figcaption>
+      </figure>
+
+      <figure>
+        <img src="images/image36.png" alt="Graf – UV boja" />
+        <figcaption>Slika 12. Usporedba srednjih vrijednosti primanja boje na boju dobivenih Preucilovom, Ritzovom i Brunnerovom metodom te analizom slike za UV-sušeću boju.</figcaption>
+      </figure>
+
+      <p>Postotci prekrivene površine zadnjom otisnutom tiskarskom bojom dobiveni analizom slike variraju između 49,82 % i 96,97 % za uzorke otisnute konvencionalnim bojama, dok za uzorke otisnute UV tiskarskom bojom vrijednosti variraju između 31,68 % i 98,42 % (Tablica 8.). Rezultati primanja boje na boju izračunati Preucilovom metodom (Slike 9. – 12.) obuhvaćaju relativno slične raspone vrijednosti, kako među mjerenim uzorcima, tako i između dviju vrsta tiskarskih boja, te neke od tih vrijednosti (A i B) prelaze 100 %. Za uzorke tiskane konvencionalnim bojama, vrijednosti primanja boje na boju dobivene ovom metodom variraju između 58,06 % i 105,36 %, dok su za uzorke tiskane UV bojama izmjerene vrijednosti bile između 71,31 % i 100,45 %. Vrijednosti primanja boje na boju izračunate prema Ritzovoj metodi (Slike 9. – 12.) sadrže manje varijacije od vrijednosti izračunatih Preucilovom metodom — od 85,51 % do 100,99 % u slučaju konvencionalnih boja te od 91,22 % do 100,09 % u slučaju UV otisaka. Dvije od tih vrijednosti prelaze 100 % (A i B). Primjena Brunnerove metode rezultirala je najmanjim varijacijama između vrijednosti. Kod konvencionalnih uzoraka vrijednosti prema Brunnerovoj metodi variraju od 95,84 % do 100,68 %, dok kod UV uzoraka od 95,99 % do 100,06 %. Analiza trappinga prema Brunnerovoj, Preucilovoj i Ritzovoj metodi pokazala je da je UV-sušeća tiskarska boja kod crnog uzorka (C+M+Y) ostvarila maksimalne vrijednosti trappinga od 100 %. Međutim, maksimalne vrijednosti trappinga zabilježene su i kod pojedinih uzoraka otisnutih konvencionalnim tiskarskim bojama. Usporedba rezultata dobivenih primjenom sve tri metode nije pokazala značajne razlike u procjeni trappinga između konvencionalnih i UV-sušećih tiskarskih boja, što upućuje na to da obje skupine boja mogu ostvariti vrlo učinkovito primanje boje na boju, ovisno o kombinaciji boja i uvjetima tiska. Raspon izmjerenih vrijednosti kod Preucilove metode veći je od raspona izmjerenih vrijednosti kod Ritzove i Brunnerove metode, dok Brunnerova ima najmanji raspon. Usporedba rezultata analize slike i izračunatih vrijednosti primanja boje na boju korištenjem sve tri spomenute metode pokazala je da su rezultati analize slike najsličniji rezultatima dobivenim Preucilovom metodom. Također se dokazuje da je, osim izračuna primanja boje na boju, potrebno izvesti dodatnu analizu kao što je slikovna analiza, kako bi se bolje dobio uvid u primanje boje na boju.</p>
+
+      <p>Rezultati denzitometrijske analize pokazali su da su D<sub>op</sub> vrijednosti konvencionalnih boja u većini slučajeva bile veće od odgovarajućih vrijednosti UV-sušeće boje. Slikovna analiza također je potvrdila da su konvencionalne boje proizvođača A i B ostvarile usporedivu pokrivenost površine bojom, dok je kod proizvođača C zabilježena čak i veća pokrivenost u odnosu na UV-sušeću boju. Analiza ink trappinga pokazala je da je UV-sušeća boja kod crnog uzorka prema Brunnerovoj, Preucilovoj i Ritzovoj metodi ostvarila trapping od 100 %, no jednako visoke vrijednosti zabilježene su i kod konvencionalnih tiskarskih boja. Također, sve tri metode određivanja trappinga pokazale su vrlo slične trendove, bez značajnih razlika u procjeni učinkovitosti prijenosa boje na boju između konvencionalnih i UV-sušećih tiskarskih boja, što potvrđuje da je konvencionalnim tiskarskim bojama moguće postići sličnu ili jednaku kvalitetu višebojne reprodukcije kao kod UV-sušećih boja.</p>
+
+      <p>Denzitometrijska analiza pokazala je minimalne varijacije D<sub>op</sub> vrijednosti između istih uzoraka, dok su nešto veća odstupanja zabilježena između pojedinih kombinacija boja, pri čemu su najmanja i najveća D<sub>op</sub> vrijednost ostvarene kod zelenog i crvenog uzorka. Slikovna analiza pokrivenosti površine također je pokazala vrlo ujednačene rezultate, a vrijednosti ink trappinga određene Brunnerovom, Preucilovom i Ritzovom metodom nisu pokazale značajne razlike između proizvođača niti između primijenjenih metoda. Dobiveni rezultati upućuju na zaključak da su uočene razlike bile male te nisu značajno utjecale na učinkovitost prijenosa boje na boju, što potvrđuje da otisci dobiveni s konvencionalnim bojama omogućuju jednaki prijenos boje na boju.</p>
+
+      <p>Usporedbom rezultata slikovne analize i izračunatih vrijednosti ink trappinga prema Brunnerovoj, Preucilovoj i Ritzovoj metodi utvrđeno je da su rezultati slikovne analize u najvećoj mjeri odgovarali vrijednostima dobivenim Preucilovom metodom, dok se kod ostalih metoda nisu uvijek uočavali isti trendovi. Kod otiskivanja tona s tri nanesene boje (C+M+Y) najveća pokrivenost površine bojom ostvarena je kod otiska s C bojom (57,90 %), dok je najmanja vrijednost zabilježena kod UV-sušeće boje (31,68 %). Također, najveće razlike u D<sub>op</sub> vrijednostima uočene su kod zelenog uzorka, pri čemu je UV-sušeća boja ostvarila najnižu D<sub>op</sub> vrijednost (1,06 ± 0,01), dok je najveća D<sub>op</sub> vrijednost zabilježena kod crvenog uzorka konvencionalne boje C. Dobiveni rezultati pokazuju da, iako su kvalitativni parametar primanja boje na boju i pokrivenost površine povezani s kvalitetom višebojne reprodukcije, njihova međusobna povezanost nije dovoljno izražena da bi se potvrdila značajna korelacija.</p>
+
+      <p>Vrijednosti prekrivene površine zadnjim otisnutim slojem boje kod konvencionalnih otisaka kretale su se od 49,82 % do 96,97 %, dok su kod UV otisaka iznosile od 31,68 % do 98,42 %. Iako je UV-sušeća boja u pojedinim kombinacijama boja ostvarila visoke vrijednosti pokrivenosti površine, kod otiskivanja triju boja (C+M+Y) zabilježena je najmanja pokrivenost površine upravo kod UV otiska (31,68 %), dok je najveća vrijednost ostvarena kod konvencionalne boje C (57,90 %). Kod pojedinih dvobojnih kombinacija UV otisci ostvarili su veću pokrivenost površine, primjerice kod tonova M+Y (98,42 %) i C+M (92,63 %), no rezultati nisu pokazali dosljednu prednost UV-sušeće boje u odnosu na konvencionalne boje. Rezultati ukazuju na to da pokrivenost površine nije izravno određena samo vrstom tiskarske boje, odnosno da otisci nastali s UV-sušećom bojom nužno ne sadrže bolju pokrivenost površine bojom, već da pokrivenost ovisi i o kombinaciji boja, svojstvima pojedinog sustava boja te uvjetima višebojnog tiska.</p>
+    </section>
+
+    <!-- ================= 5. DIGITALNA PRIPREMA I PRIJELOM ================= -->
+    <section>
+      <h1>5. Digitalna priprema i prijelom diplomskog rada</h1>
+
+      <h2>5.1 Koncept</h2>
+      <p>Koncept digitalnog web-prikaza diplomskog rada proizašao je iz iskustva stečenog sudjelovanjem u EPE (Écran, Papier, Éditer) projektu, koji je potaknuo razmišljanje o mogućnostima prezentacije sadržaja diplomskog rada u digitalnom, interaktivnom te u konačnici tiskanom obliku. Diplomski rad predstavlja akademski dokument čija je struktura morala ostati usklađena s pravilima akademskog pisanja, što uključuje zadržavanje strukture i redoslijeda poglavlja, hijerarhije naslova, načina označavanja slika i grafova, akademskog načina citiranja, organizacije teksta te logičnog slijeda čitanja. Polazište izrade ovog digitalnog prijeloma rada stoga nije bilo mijenjanje njegove strukture, već istraživanje mogućnosti prezentacije rada u formi interaktivnog digitalnog medija.</p>
+
+      <p>Umjesto izrade diplomskog rada isključivo u programima za prijelom i obradu dokumenata, poput Microsoft Worda ili Adobe InDesigna, odlučeno je razviti njegovu web inačicu. Web prikaz izrađen je korištenjem HTML-a, CSS-a i JavaScripta te je oblikovan tako da zadržava osnovnu strukturu i vizualne karakteristike klasičnog diplomskog rada, ali za razliku od uobičajenog statičnog prikaza dokumenta, web format omogućuje uvođenje interaktivnih i dinamičnih elemenata, poput animacija, promjena sadržaja i različitih interakcija. Iako su Microsoft Word i Adobe InDesign među najčešće korištenim alatima za izradu i prijelom dokumenata, njihovo je korištenje, osobito u slučaju Adobe InDesigna, vezano uz komercijalne licence i pretplate, što ih čini manje dostupnima korisnicima koji nemaju pristup takvom softveru. Upravo je pitanje dostupnosti alata jedno od polazišta EPE projekta, čiji je cilj razvoj otvorenog i svima dostupnog rješenja za izradu i prijelom publikacija. Primjenom otvorenih web tehnologija, poput HTML-a, CSS-a i JavaScripta, moguće je izraditi dokument bez oslanjanja na komercijalni softver, a istovremeno iskoristiti mogućnosti weba za stvaranje interaktivnog i dinamičnog sadržaja.</p>
+
+      <p>Cilj nije bio zamijeniti strukturu diplomskog rada strukturom klasične web stranice, već promijeniti način njegove prezentacije i iskustvo čitanja, uz dodavanje mogućnosti interakcije sa sadržajem te izravne pretvorbe web prikaza u PDF i konačnog tiska diplomskog rada. Dodatna prednost ovakvog pristupa je mogućnost povezivanja digitalne i tiskane verzije rada. Web prikaz zadržava mogućnosti interakcije karakteristične za klasične web stranice, dok istovremeno omogućuje paginaciju sadržaja pomoću Paged.js-a i njegov izravan izvoz u PDF format spreman za tisak. Softverska biblioteka Paged.js koristi CSS pravila kako bi HTML dokument prikazan u web pregledniku pravilno paginirala i pripremila za generiranje PDF-a spremnog za tisak. Paged.js omogućuje kontrolu svojstava stranice, uključujući margine, veličinu i orijentaciju dokumenta, kao i automatsko numeriranje stranica te dinamičko prikazivanje zaglavlja i podnožja. Na taj se način ostvaruje izravna povezanost između digitalnog web-prikaza i konačnog PDF dokumenta, odnosno tiskane verzije rada. Vrijedno svojstvo ovakvog načina digitalnog prijeloma jest mogućnost automatskog određivanja i numeriranja stranica izvornog sadržaja te generiranja dokumenta prilagođenog za tisak. Iako je u ovom radu prijelom unaprijed definiran pravilima diplomskog rada i konačni dokument već ima određenu strukturu i numeraciju stranica, Paged.js pruža mogućnost primjene istih principa i na druge klasične web stranice. Tako je moguće automatski definirati veličinu i orijentaciju dokumenta, prilagoditi margine te generirati paginirani dokument bez potrebe za ručnim prijelomom svake pojedine stranice. Ovakav način rada omogućuje da se promjene uvedene u web inačicu, bilo na tekstu, slikama ili drugim vizualnim elementima, prilikom generiranja PDF-a zadrže i u konačnom dokumentu, što otvara prostor za različite mogućnosti kreativnog i vizualnog izražavanja te se omogućuje veća sloboda u oblikovanju i eksperimentiranju s vizualnom prezentacijom sadržaja, dok web inačica istovremeno pruža prostor za razvoj interaktivnih elemenata koji obogaćuju iskustvo čitanja. Digitalni prikaz tako ne predstavlja samo reprodukciju diplomskog rada u drugom formatu, već njegovu prilagodbu mogućnostima interaktivnog medija.</p>
+
+      <h2>5.2 Oblikovanje i interaktivni elementi</h2>
+      <p><em>[Poglavlje u izradi.]</em></p>
+    </section>
+
+    <!-- ================= 6. ZAKLJUČAK ================= -->
+    <section>
+      <h1>6. Zaključak</h1>
+      <p>Kvaliteta višebojne reprodukcije u velikoj mjeri ovisi o svojstvima tiskarskih boja i njihovom međusobnom ponašanju tijekom tiskovnog procesa. Posebno važan čimbenik predstavlja primanje boje na boju, odnosno sposobnost pojedinog sloja boje da prihvati sljedeći sloj bez narušavanja kvalitete konačnog otiska. Cilj provedenog istraživanja bio je utvrditi postoji li razlika u kvaliteti primanja boje na boju između konvencionalnih i UV-sušećih boja. Rezultati su prikazali da se kvaliteta prianjanja boje na boju značajno ne razlikuje između konvencionalnih i UV-sušećih boja. Vrijednost trappinga kod različitih proizvođača konvencionalnih boja bila je usklađena kroz sve tri primijenjene metode — Brunnerovu, Preucilovu i Ritzovu — dok su se rezultati Preucilove metode najviše podudarali s provedenom slikovnom analizom. Usporedba rezultata dobivenih primjenom sve tri metode nije pokazala značajne razlike u procjeni trappinga između konvencionalnih i UV-sušećih tiskarskih boja, što upućuje na to da obje skupine boja mogu ostvariti vrlo učinkovito primanje boje na boju, ovisno o kombinaciji boja i uvjetima tiska. Rezultati slikovne analize između UV-sušećih i konvencionalnih boja nisu se značajno razlikovali, s iznimkom crnog otiska UV bojom (C+M+Y) koji je ostvario najmanju pokrivenost površine, što je potvrđeno fotografijama snimljenim digitalnim mikroskopom i obrađenim u ImageJ programu. Hipoteza H1 je potvrđena jer su sustavi konvencionalnih tiskarskih boja ostvarili vrijednosti ink trappinga i kvalitetu višebojne reprodukcije usporedive s UV-sušećim bojama, dok se hipoteza H2 može smatrati potvrđenom jer rezultati nisu pokazali značajne razlike u prijenosu boje na boju između otisaka dobivenih isključivo konvencionalnim tiskarskim bojama. Hipoteza H3 nije potvrđena jer rezultati nisu pokazali jednoznačnu korelaciju između ink trappinga kao kvalitativnog parametra primanja boje na boju i pokrivenosti površine bojom. Naposljetku, hipoteza H4 nije potvrđena jer rezultati slikovne analize nisu pokazali da otisci nastali UV-sušećom bojom u svim slučajevima ostvaruju veću pokrivenost površine bojom u odnosu na konvencionalne tiskarske boje. Rezultati upućuju na to da odabir sustava — konvencionalnih ili UV-sušećih boja — za višebojnu reprodukciju ovisi o ostalim svojstvima poput cijene, ekološke osviještenosti, načina i brzine sušenja, iz razloga što nije pronađena značajna razlika u kvaliteti reprodukcije na kojoj bi se temeljio prevladavajući odabir između ovih vrsta tiskarskih boja. Dobiveni rezultati potvrđuju da se odgovarajućim odabirom konvencionalnih tiskarskih boja može postići kvaliteta višebojne reprodukcije usporediva s onom ostvarenom primjenom UV-sušećih boja.</p>
+    </section>
+
+    <!-- ================= 7. LITERATURA ================= -->
+    <section class="references">
+      <h1>7. Literatura</h1>
+      <ol class="ref-list" style="padding-left:1.4rem; font-size:10.5pt;">
+        <li>Kiphhan, H. (2001). <em>Handbook of Print Media.</em> Berlin: Springer. Dostupno na: <a href="https://books.google.hr/books?id=GpouDwAAQBAJ">books.google.hr</a> [11. 8. 2026.]</li>
+        <li>Aydemir, C., &amp; Özsoy, S. A. (2020). Environmental impact of printing inks and printing process. <em>Journal of Graphic Engineering and Design</em>, 11(2), 51–63. Dostupno na: <a href="https://jged.uns.ac.rs/index.php/jged/article/view/464">jged.uns.ac.rs</a> [11. 8. 2026.]</li>
+        <li>Assis, R., Conesa, C., Pedoni, E., &amp; Lalevée, J. (2025). New developments and inkjet applications of UV-LED curable inks. Dostupno na: <a href="https://www.sciencedirect.com/science/article/pii/S2949822825006859">sciencedirect.com</a> [21. 5. 2026.]</li>
+        <li>Leach, R. H., &amp; Pierce, R. J. (Eds.). (2008). <em>The Printing Ink Manual</em> (5th ed.). Dordrecht: Springer.</li>
+        <li>Glöckner, P., Jung, T., Struck, S., &amp; Studer, K. (2008). <em>Radiation Curing: Coatings and Printing Inks.</em> Germany: Vincentz Network GmbH &amp; Co.</li>
+        <li>Encyclopaedia Britannica. (n.d.). <em>Color printing.</em> Dostupno na: <a href="https://www.britannica.com/technology/color-printing">britannica.com</a> [2. 8. 2026.]</li>
+        <li>Nguyen, H. T. K., &amp; Van Huy, P. (2022). A Study of the Ink Trapping in Lithographic Printing. <em>International Journal of Scientific Research in Science and Technology (IJSRST)</em>, 9(4), 16–20. Dostupno na: <a href="https://doi.org/10.32628/ijsrst2293161">doi.org/10.32628/ijsrst2293161</a> [16. 7. 2026.]</li>
+        <li>Poljak Gaži, J., Majnarić, I., Zjakić, I., &amp; Bates, I. (2026). Influence of printing substrate characteristics on ink trapping behavior. <em>Innovations in Publishing, Printing and Multimedia Technologies</em>, 2(1). Dostupno na: <a href="https://doi.org/10.59476/ilpmt2026.v2i1.789">doi.org/10.59476/ilpmt2026.v2i1.789</a> [16. 7. 2026.]</li>
+        <li>Nguyen, H. T. K. (2024). Ink sequence effects on color gamut in multicolor lithographic printing. <em>International Journal of Scientific Research in Science and Technology</em>, 11(3), 602–606. Dostupno na: <a href="https://www.researchgate.net/publication/381423025">researchgate.net</a> [16. 7. 2026.]</li>
+        <li>Cunin, D. (2024). Écran-papier-éditer: Web-to-print technologies. U <em>Proceedings of the Blaž Baromić International Conference on Printing, Design and Graphic Communications</em> (str. 8–20). Faculty of Graphic Arts, University of Zagreb. Dostupno na: <a href="https://epe.esad-gv.fr/site/assets/files/1025/bb_2025_proceedings-dom.pdf">epe.esad-gv.fr</a> [6. 7. 2026.]</li>
+        <li>Paged.js — dokumentacija. Dostupno na: <a href="https://pagedjs.org/en/documentation/">pagedjs.org</a> [6. 7. 2026.]</li>
+        <li>W3Schools. <em>Responsive Web Design – Media Queries.</em> Dostupno na: <a href="https://www.w3schools.com/css/css_rwd_mediaqueries.asp">w3schools.com</a> [6. 7. 2026.]</li>
+        <li>World Wide Web Consortium (W3C). (2023). <em>CSS Paged Media Module Level 3 (Working Draft).</em> Dostupno na: <a href="https://www.w3.org/TR/css-page-3/#intro">w3.org</a> [6. 7. 2026.]</li>
+        <li>Mozilla Developer Network. <em>Polyfill.</em> MDN Web Docs. Dostupno na: <a href="https://developer.mozilla.org/en-US/docs/Glossary/Polyfill">developer.mozilla.org</a> [6. 7. 2026.]</li>
+        <li>Flint Group. (2016). <em>Novaplast® BIO — The series for foil and other non-absorbent substrates.</em> Dostupno na: <a href="https://asg-grafic.com/wp-content/uploads/2016/12/12_Base_process_novaplast_BIO.pdf">asg-grafic.com</a> [23. 6. 2026.]</li>
+        <li>Huber group. (2024). <em>Technical Information 16.P.039 — MGA® LABEL 2100.</em> Dostupno na: <a href="https://www.hubergroup.com/">hubergroup.com</a> [23. 6. 2026.]</li>
+        <li>SunTec® V-Foil (2023). <em>Technical Data Sheet</em> (engleska verzija).</li>
+        <li>Toyo Ink Europe. (2020). <em>Technical Information — FlashDry® LED S5 series.</em> Dostupno na: <a href="https://hdumediaassetmgr.blob.core.windows.net/e-commerce/TDS%20FD%20LED%20S5%20Series_TDS.pdf">toyoink-europe.com</a> [23. 6. 2026.]</li>
+        <li>X-Rite. (2018). <em>eXact Standard</em> — brošura. Dostupno na: <a href="https://www.xrite.com/">xrite.com</a> [7. 7. 2026.]</li>
+        <li>X-Rite. <em>eXact / eXact Xp: eXact family model comparison</em> — brošura. Dostupno na: <a href="https://www.xrite.com/">xrite.com</a> [7. 7. 2026.]</li>
+        <li>Dino-Lite Digital Microscope — AM4917MZT. Dostupno na: <a href="https://www.dino-lite.hr/am4917mzt/">dino-lite.hr</a> [9. 6. 2026.]</li>
+        <li>Preucil, F. (1953). Color hue and ink transfer — their relation to perfect reproduction. U <em>TAGA Proceedings</em> (str. 102–110).</li>
+        <li>Ritz, A. (1996). A halftone treatment for obtaining multi-colour ink film trapping values. <em>Professional Printer</em>, 40(5), 11–17.</li>
+        <li>ImageJ Wiki. Dostupno na: <a href="https://imagej.net/software/imagej/">imagej.net</a> [10. 6. 2026.]</li>
+      </ol>
+    </section>
+
+    <!-- ================= POPIS TABLICA ================= -->
+    <section>
+      <h1>Popis tablica</h1>
+      <ul style="list-style:none; padding-left:0; font-size:10.5pt;">
+        <li>Tablica 1. Korištene oznake za analizirane otiske</li>
+        <li>Tablica 2. Specifikacije uređaja X-Rite eXact Standard [20]</li>
+        <li>Tablica 3. Specifikacije digitalnog mikroskopa Dino-Lite AM4917MZT EDGE PLUS [21]</li>
+        <li>Tablica 4. Spektrofotometrijske vrijednosti optičke gustoće za zelenu boju</li>
+        <li>Tablica 5. Spektrofotometrijske vrijednosti optičke gustoće za crvenu boju</li>
+        <li>Tablica 6. Spektrofotometrijske vrijednosti optičke gustoće za plavu boju</li>
+        <li>Tablica 7. Spektrofotometrijske vrijednosti optičke gustoće za crnu boju</li>
+        <li>Tablica 8. Postotak prekrivene površine zadnje otisnute boje dobiven analizom slike</li>
+        <li>Tablica 9. Analiza slike konvencionalnih i UV otisaka s tresholdom</li>
+      </ul>
+    </section>
+
+    <!-- ================= POPIS SLIKA ================= -->
+    <section>
+      <h1>Popis slika</h1>
+      <ul style="list-style:none; padding-left:0; font-size:10.5pt;">
+        <li>Slika 1. Dijagram sastava konvencionalnih tiskarskih boja</li>
+        <li>Slika 2. Shematski prikaz procesa UV očvršćivanja tiskarske boje (Kiphhan, 2001.)</li>
+        <li>Slika 3. Prikaz separacije procesnih boja i konačne CMYK reprodukcije (PrintingCenterUSA)</li>
+        <li>Slika 4. Shematski prikaz preklapanja dviju tiskarskih boja na tiskovnoj podlozi (RIT)</li>
+        <li>Slika 5. Shematski prikaz web-to-print procesa od web-preglednika do izlaznih formata (Cunin, 2024.)</li>
+        <li>Slika 6. Kontrolni strip s punim poljima koji služi za mjerenje primanja boje na boju</li>
+        <li>Slika 7. Prijenosni spektrofotometar X-Rite eXact Standard</li>
+        <li>Slika 8. Dino-Lite AM4917MZT digitalni mikroskop</li>
+        <li>Slika 9. Usporedba srednjih vrijednosti primanja boje na boju za konvencionalnu tiskarsku boju A</li>
+        <li>Slika 10. Usporedba srednjih vrijednosti primanja boje na boju za konvencionalnu tiskarsku boju B</li>
+        <li>Slika 11. Usporedba srednjih vrijednosti primanja boje na boju za konvencionalnu tiskarsku boju C</li>
+        <li>Slika 12. Usporedba srednjih vrijednosti primanja boje na boju za UV-sušeću boju</li>
+      </ul>
     </section>
 
   </div>

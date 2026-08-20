@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const initialSlider = document.querySelector('#color-slider');
   if (initialSlider) {
-    setColor(initialSlider.value);
+    //setColor(initialSlider.value);
   }
 
   const animateBg = (time) => {

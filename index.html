@@ -496,12 +496,12 @@
       page-break-before: always;
       page-break-after: always;
       height: 297mm;
-      /* box-sizing: border-box; */
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       text-align: center;
-      padding: 30mm 22mm 25mm;
+      padding: 25mm 25mm 35mm 35mm !important;
       background: linear-gradient(160deg, #eef2ff 0%, #fdf2f8 100%);
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
@@ -510,11 +510,9 @@
     @media print {
 
       .cover {
-        box-sizing: border-box;
-        height: 297mm;
+        /* box-sizing: border-box;
+        height: 297mm; */
 
-        padding-left: 35mm !important;
-        padding-right: 22mm !important;
       }
 
     }

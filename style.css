@@ -9,6 +9,7 @@ body {
   align-items: flex-start;
   width: 100%;
   /*background: radial-gradient(circle at top left, #feffff 0%, #e0f2fe 35%, #f8fafc 100%);*/
+  background: #000000;
   color: #111827;
   font-family: "Segoe UI", sans-serif;
   overflow-x: hidden;
@@ -23,33 +24,26 @@ body {
   padding: 0;
   box-sizing: border-box;
   color: var(--content-color);
-  background: #f8fafc;
+  background: #000000;
 }
 
 .book {
-  width: 100%;
+  width: 50%;
   max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
 }
 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  /*background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.12), transparent 16%), radial-gradient(circle at 80% 75%, rgba(236, 72, 153, 0.08), transparent 16%);*/
+  background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.12), transparent 16%), radial-gradient(circle at 80% 75%, rgba(236, 72, 153, 0.08), transparent 16%);
   pointer-events: none;
-}
-
-.book {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .pagedjs_sheet {
@@ -58,7 +52,7 @@ body::before {
   margin: 24px auto !important;
   padding: 18mm;
   box-sizing: border-box;
-  background: #ffffff;
+  background: #000000;
 }
 
 .page {

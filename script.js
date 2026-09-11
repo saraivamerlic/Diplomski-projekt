@@ -1,3 +1,4 @@
+/*cmyk separcija*/
 document.addEventListener('DOMContentLoaded', async () => {
   const cssText = document.getElementById('paged-css')?.textContent || '';
   const source = document.getElementById('paged-source');
@@ -55,3 +56,170 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await renderPreview();
 });
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const drawingCursor = document.createElement("div");
+
+  drawingCursor.className = "drawing-cursor";
+
+  document.body.appendChild(drawingCursor);
+
+
+  document.addEventListener("pointermove", function (event) {
+
+    drawingCursor.style.left = event.clientX + "px";
+    drawingCursor.style.top = event.clientY + "px";
+
+  });
+
+
+  const paragraphs = document.querySelectorAll(".thesis p");
+
+  paragraphs.forEach(function (paragraph) {
+
+
+    paragraph.addEventListener("pointerenter", function () {
+
+      drawingCursor.style.display = "block";
+
+    });
+
+    paragraph.addEventListener("pointerleave", function () {
+
+      drawingCursor.style.display = "none";
+
+    });
+
+
+    paragraph.classList.add("drawing-text");
+
+    const text = paragraph.textContent;
+
+    paragraph.innerHTML = "";
+
+    [...text].forEach(function (character) {
+
+      const span = document.createElement("span");
+
+      span.textContent = character;
+      span.dataset.state = "0";
+
+      paragraph.appendChild(span);
+
+    });
+
+
+    let drawing = false;
+
+    paragraph.addEventListener("selectstart", function (event) {
+      event.preventDefault();
+    });
+
+    paragraph.addEventListener("pointerdown", function (event) {
+
+      event.preventDefault();
+
+      drawing = true;
+
+      paragraph.setPointerCapture(event.pointerId);
+
+      paint(event);
+
+    });
+
+
+    paragraph.addEventListener("pointermove", function (event) {
+
+      if (!drawing) return;
+
+      paint(event);
+
+    });
+
+
+    paragraph.addEventListener("pointerup", function () {
+
+      drawing = false;
+
+    });
+
+
+    paragraph.addEventListener("pointercancel", function () {
+
+      drawing = false;
+
+    });
+
+
+    function paint(event) {
+
+      const radius = 20;
+
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+
+      const spans = paragraph.querySelectorAll("span");
+
+      spans.forEach(function (span) {
+
+        const rect = span.getBoundingClientRect();
+
+        const spanCenterX = rect.left + rect.width / 2;
+        const spanCenterY = rect.top + rect.height / 2;
+
+        const distance = Math.sqrt(
+          Math.pow(mouseX - spanCenterX, 2) +
+          Math.pow(mouseY - spanCenterY, 2)
+        );
+
+        if (distance <= radius) {
+
+          let state = Number(span.dataset.state);
+
+          if (state >= 4) return;
+
+          state++;
+
+          span.dataset.state = state;
+
+          if (state === 1) {
+
+            // CRNO → ŽUTO
+            span.style.color = "#FFD700";
+            span.style.fontSize = "16pt";
+
+          }
+
+          else if (state === 2) {
+
+            // ŽUTO → MAGENTA
+            span.style.color = "#E6007E";
+            span.style.fontSize = "20pt";
+
+          }
+
+          else if (state === 3) {
+
+            // MAGENTA → CIJAN
+            span.style.color = "#00AEEF";
+            span.style.fontSize = "24pt";
+
+          }
+
+        }
+
+      });
+
+    }
+
+  });
+
+});
+
+
+

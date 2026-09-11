@@ -1,5 +1,6 @@
 /* Osnovni stilovi za dokument */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -7,21 +8,24 @@ html, body {
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  background: radial-gradient(circle at top left, #c7d2fe 0%, #e0f2fe 35%, #f8fafc 100%);
+  /*background: radial-gradient(circle at top left, #feffff 0%, #e0f2fe 35%, #f8fafc 100%);*/
   color: #111827;
   font-family: "Segoe UI", sans-serif;
   overflow-x: hidden;
   animation: bgShift 20s ease-in-out infinite alternate;
 }
+
 :root {
   --content-color: #111827;
 }
+
 body {
   padding: 0;
   box-sizing: border-box;
   color: var(--content-color);
   background: #f8fafc;
 }
+
 .book {
   width: 100%;
   max-width: 900px;
@@ -30,13 +34,15 @@ body {
   flex-direction: column;
   align-items: center;
 }
+
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.12), transparent 16%), radial-gradient(circle at 80% 75%, rgba(236, 72, 153, 0.08), transparent 16%);
+  /*background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.12), transparent 16%), radial-gradient(circle at 80% 75%, rgba(236, 72, 153, 0.08), transparent 16%);*/
   pointer-events: none;
 }
+
 .book {
   width: 100%;
   max-width: 900px;
@@ -45,6 +51,7 @@ body::before {
   flex-direction: column;
   align-items: center;
 }
+
 .pagedjs_sheet {
   width: min(210mm, 100%);
   max-width: 100%;
@@ -53,6 +60,7 @@ body::before {
   box-sizing: border-box;
   background: #ffffff;
 }
+
 .page {
   position: relative;
   background: transparent;
@@ -64,9 +72,11 @@ body::before {
   max-width: 100%;
   width: 100%;
 }
+
 .page::before {
   display: none;
 }
+
 .page-header {
   display: flex;
   flex-wrap: wrap;
@@ -81,14 +91,17 @@ body::before {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+
 .book-title {
   margin: 0;
   font-size: 2rem;
 }
+
 .page-subtitle {
   margin: 0.25rem 0 0;
   color: rgba(255, 255, 255, 0.85);
 }
+
 .animated-badge {
   display: inline-block;
   padding: 0.5rem 0.95rem;
@@ -100,58 +113,195 @@ body::before {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+
 .page-block {
   margin-bottom: 1.5rem;
   color: var(--content-color);
 }
+
 .page-block h2 {
   margin: 0 0 0.8rem;
   font-size: 1.25rem;
 }
+
 .page-block p,
 .page-block li {
   margin: 0 0 1rem;
 }
+
 .page-block ul {
   padding-left: 1.2rem;
   margin: 0;
 }
+
 .page-block {
   margin-bottom: 1.5rem;
   color: var(--content-color);
 }
+
 .slider-block {
   background: rgba(37, 99, 235, 0.08);
   border: 1px solid rgba(37, 99, 235, 0.16);
   padding: 1rem 1.2rem;
   border-radius: 14px;
 }
+
 .slider-block label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 700;
 }
+
 .slider-block input[type='range'] {
   width: 100%;
 }
+
 .slider-block p {
   margin: 0.75rem 0 0;
   color: #1f2937;
 }
+
 .page-footer {
   text-align: right;
   font-size: 0.9rem;
   color: var(--content-color);
 }
+
 @keyframes pulse {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-8px); opacity: 0.85; }
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(-8px);
+    opacity: 0.85;
+  }
 }
+
 @keyframes hueRotate {
-  from { filter: hue-rotate(0deg); }
-  to { filter: hue-rotate(360deg); }
+  from {
+    filter: hue-rotate(0deg);
+  }
+
+  to {
+    filter: hue-rotate(360deg);
+  }
 }
+
 @keyframes bgShift {
-  from { background-position: 0% 0%; }
-  to { background-position: 100% 100%; }
+  from {
+    background-position: 0% 0%;
+  }
+
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+/* =========================================================
+   INTERAKTIVNA CMYK SEPARACIJA
+   ========================================================= */
+
+.interactive-cmyk {
+  width: 100%;
+  max-width: 150mm;
+  margin: 12mm auto;
+  text-align: center;
+}
+
+.interactive-cmyk h2 {
+  font-size: 14pt;
+  margin-bottom: 4mm;
+}
+
+.interactive-cmyk>p {
+  font-size: 11pt;
+  text-align: justify;
+}
+
+.cmyk-controls {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 6mm 0;
+}
+
+.cmyk-controls button {
+  min-width: 38px;
+  height: 32px;
+
+  border: 1px solid #777;
+  border-radius: 4px;
+
+  background: #fff;
+  color: #111;
+
+  font-family: "Times New Roman", serif;
+  font-size: 10pt;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.cmyk-controls button:hover {
+  background: #eee;
+}
+
+.cmyk-controls button.active {
+  background: #111;
+  color: #fff;
+}
+
+.cmyk-image-wrap {
+  position: relative;
+
+  width: 100%;
+  max-width: 140mm;
+
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: center;
+}
+
+#cmyk-source-image {
+  display: none;
+}
+
+#cmyk-canvas {
+  display: block;
+
+  max-width: 100%;
+  width: auto;
+  height: auto;
+
+  border: 1px solid #ddd;
+}
+
+.cmyk-channel-label {
+  margin-top: 4mm !important;
+  margin-bottom: 0 !important;
+  text-align: center;
+  font-size: 10pt;
+  font-style: italic;
+}
+
+.interactive-cmyk figcaption {
+  margin-top: 5mm;
+  margin-bottom: 2mm;
+}
+
+
+
+
+.thesis p.drawing-text {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: crosshair;
+}
+
+.thesis p.drawing-text span {
+  user-select: none;
+  -webkit-user-select: none;
 }

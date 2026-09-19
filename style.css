@@ -9,7 +9,7 @@ body {
   align-items: flex-start;
   width: 100%;
   /*background: radial-gradient(circle at top left, #feffff 0%, #e0f2fe 35%, #f8fafc 100%);*/
-  background: #000000;
+  background: #f8fafc;
   color: #111827;
   font-family: "Segoe UI", sans-serif;
   overflow-x: hidden;
@@ -28,14 +28,14 @@ body {
 }
 
 .book {
-  width: 50%;
+  width: 100%;
   max-width: 900px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-left: 1px solid #000;
-  border-right: 1px solid #000;
+  /* border-left: 1px solid #000;
+  border-right: 1px solid #000; */
 }
 
 body::before {

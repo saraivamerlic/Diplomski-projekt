@@ -107,6 +107,11 @@
         content: none !important;
       }
 
+      /* Hover animacije se ne ispisuju */
+      .lottie-overlay {
+        display: none !important;
+      }
+
       .book {
         max-width: none !important;
         margin: 0 !important;
@@ -336,6 +341,28 @@
     /* Razmak između slika kada su jedna ispod druge */
     figure+figure {
       margin-top: 5mm;
+    }
+
+    /* Hover Lottie animacije preko slika (samo za web prikaz) */
+    .lottie-overlay {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 140ms ease-out;
+      background: #ffffff;
+      border-radius: 4px;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    .lottie-overlay.is-visible {
+      opacity: 1;
+    }
+
+    .lottie-overlay svg {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
     }
 
     .slika-graf {
@@ -2848,6 +2875,12 @@
   <script src="paged.polyfill.js"></script>
   <script src="script.js"></script>
   <script src="cmyk.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <script src="images/Animacije/UV_drying.js"></script>
+  <script src="images/Animacije/dijagram_sastava_boje.js"></script>
+  <script src="images/Animacije/ink_trapping.js"></script>
+  <script src="images/Animacije/web-to-print.js"></script>
+  <script src="animations.js"></script>
 
 </body>
 
